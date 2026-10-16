@@ -22,7 +22,7 @@ Built in **Rust** with **GTK4 + libadwaita**. Runs as a **headless background da
 **Fedora Workstation / GNOME only.** One script does everything except the keyboard shortcut.
 
 ```bash
-git clone <YOUR_REPO_URL> clipbord
+git clone https://github.com/AmirAbbas101/clipbord.git
 cd clipbord
 chmod +x install.sh
 ./install.sh
