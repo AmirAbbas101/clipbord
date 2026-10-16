@@ -1,0 +1,3 @@
+# OBSOLETE — intentionally not installed.
+# Clipbord must NOT ship a .desktop file: GNOME would show a dock icon.
+# Use a Custom Keyboard Shortcut → `clipbord toggle` instead.

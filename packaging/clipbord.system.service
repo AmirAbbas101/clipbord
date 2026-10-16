@@ -1,0 +1,15 @@
+[Unit]
+Description=Clipbord clipboard history daemon
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/clipbord daemon
+Restart=on-failure
+RestartSec=2
+Environment=RUST_LOG=info
+MemoryMax=256M
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,21 @@
+[Unit]
+Description=Clipbord clipboard history daemon (background, no dock)
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/clipbord daemon
+Restart=on-failure
+RestartSec=2
+Environment=RUST_LOG=info
+# Fallbacks — daemon also discovers mutter XAUTHORITY at runtime.
+Environment=DISPLAY=:0
+Environment=WAYLAND_DISPLAY=wayland-0
+PassEnvironment=WAYLAND_DISPLAY DISPLAY XDG_RUNTIME_DIR XDG_CURRENT_DESKTOP XAUTHORITY
+MemoryMax=128M
+Nice=5
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=default.target graphical-session.target
