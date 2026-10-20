@@ -237,18 +237,24 @@ echo "  • Capture: xclip / Xwayland (survives reboot via XAUTHORITY)"
 echo "  • Images: clipboard image data + local image file paths"
 echo "  • Auto-paste: ydotool (+ xdotool fallback) into focused fields"
 echo
-echo "  ONE manual step — bind a keyboard shortcut:"
+echo "  Manual step — bind keyboard shortcuts:"
 echo
 echo "  Settings → Keyboard → Keyboard Shortcuts → Custom Shortcuts → +"
 echo "    Name:     Clipbord"
 echo "    Command:  $BIN_DIR/clipbord toggle"
 echo "    Shortcut: Super+V   (or Ctrl+Alt+V)"
 echo
+echo "  Optional — touchpad on/off while typing:"
+echo "    Name:     Clipbord Touchpad"
+echo "    Command:  $BIN_DIR/clipbord touchpad"
+echo "    Shortcut: Super+Shift+T   (or any free combo)"
+echo
 echo "  Then: click an input → Super+V → Enter (pastes into that field)."
 echo
 echo "  Useful:"
 echo "    clipbord status"
 echo "    clipbord toggle"
+echo "    clipbord touchpad"
 echo "    systemctl --user status clipbord.service"
 echo "    systemctl --user restart clipbord.service"
 echo "    journalctl --user -u clipbord.service -f"

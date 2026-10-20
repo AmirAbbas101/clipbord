@@ -14,6 +14,7 @@ Built in **Rust** with **GTK4 + libadwaita**. Runs as a **headless background da
 - Image clips: clipboard image data, or a copied path/`file://` to a local image
 - Deduping, size caps, SQLite persistence — RAM stays bounded
 - No dock icon — capture uses **`xclip`**, not `wl-paste`
+- **Touchpad toggle** — disable the pad while typing, re-enable when done (`clipbord touchpad`)
 
 ---
 
@@ -22,7 +23,7 @@ Built in **Rust** with **GTK4 + libadwaita**. Runs as a **headless background da
 **Fedora Workstation / GNOME only.** One script does everything except the keyboard shortcut.
 
 ```bash
-git clone https://github.com/AmirAbbas101/clipbord.git
+git clone <YOUR_REPO_URL> clipbord
 cd clipbord
 chmod +x install.sh
 ./install.sh
@@ -47,14 +48,25 @@ You may be asked for your password once (`pkexec` / `sudo`) for system packages 
 
 After install the daemon runs in the background and starts again on login.
 
-### Bind a keyboard shortcut (required)
+### Bind keyboard shortcuts (required)
 
-Clipbord has **no app menu entry** on purpose. Bind a custom shortcut once:
+Clipbord has **no app menu entry** on purpose. Bind custom shortcuts once:
+
+**Clipboard history**
 
 1. **Settings → Keyboard → Keyboard Shortcuts → Custom Shortcuts → +**
 2. **Name:** `Clipbord`
 3. **Command:** `/home/$USER/.local/bin/clipbord toggle`
 4. **Shortcut:** `Super+V` (or `Ctrl+Alt+V`)
+
+**Touchpad on/off** (optional — stops accidental palm clicks while typing)
+
+1. **Custom Shortcuts → +** again
+2. **Name:** `Clipbord Touchpad`
+3. **Command:** `/home/$USER/.local/bin/clipbord touchpad`
+4. **Shortcut:** e.g. `Super+Shift+T` (pick any free combo)
+
+Press the shortcut to **disable** the touchpad before typing; press again to **enable** it. A desktop notification confirms the new state.
 
 ### Verify
 
@@ -83,11 +95,16 @@ systemctl status ydotool.service
 | Delete | `Delete` / `Backspace` (when search is not focused) |
 | Clear unpinned | Header clear button |
 | Close | `Esc` |
+| Touchpad on/off | Your touchpad shortcut, or `clipbord touchpad` |
 
 ```bash
 clipbord status
 clipbord toggle
 clipbord clear
+clipbord touchpad          # toggle pad on ↔ off
+clipbord touchpad on
+clipbord touchpad off
+clipbord touchpad status
 systemctl --user restart clipbord.service
 systemctl --user stop clipbord.service
 systemctl --user start clipbord.service

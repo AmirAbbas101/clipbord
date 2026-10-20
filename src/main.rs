@@ -4,6 +4,7 @@ mod config;
 mod daemon;
 mod ipc;
 mod store;
+mod touchpad;
 mod ui;
 
 use anyhow::{Context, Result};
@@ -35,6 +36,23 @@ enum Commands {
     Status,
     /// Print the default config path.
     ConfigPath,
+    /// Toggle / control the laptop touchpad (for typing without palm hits).
+    Touchpad {
+        #[command(subcommand)]
+        action: Option<TouchpadCmd>,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+enum TouchpadCmd {
+    /// Flip touchpad on ↔ off (default when no subcommand).
+    Toggle,
+    /// Enable the touchpad.
+    On,
+    /// Disable the touchpad (useful while typing).
+    Off,
+    /// Print current touchpad state.
+    Status,
 }
 
 fn main() -> Result<()> {
@@ -61,7 +79,19 @@ fn main() -> Result<()> {
             println!("{}", config::Config::path()?.display());
             Ok(())
         }
+        Commands::Touchpad { action } => run_touchpad(action),
     }
+}
+
+fn run_touchpad(action: Option<TouchpadCmd>) -> Result<()> {
+    let state = match action.unwrap_or(TouchpadCmd::Toggle) {
+        TouchpadCmd::Toggle => touchpad::toggle()?,
+        TouchpadCmd::On => touchpad::set_enabled(true)?,
+        TouchpadCmd::Off => touchpad::set_enabled(false)?,
+        TouchpadCmd::Status => touchpad::status()?,
+    };
+    println!("touchpad: {}", state.label());
+    Ok(())
 }
 
 fn print_status() -> Result<()> {
