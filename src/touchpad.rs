@@ -45,6 +45,13 @@ impl State {
         }
     }
 
+    fn icon(self) -> &'static str {
+        match self {
+            Self::Enabled | Self::DisabledOnExternalMouse => "input-touchpad-symbolic",
+            Self::Disabled => "touchpad-disabled-symbolic",
+        }
+    }
+
     fn is_effectively_on(self) -> bool {
         matches!(self, Self::Enabled | Self::DisabledOnExternalMouse)
     }
@@ -74,9 +81,18 @@ fn gsettings_set(state: State) -> Result<()> {
     Ok(())
 }
 
-fn notify(title: &str, body: &str) {
+fn notify(title: &str, body: &str, icon: &str) {
     let _ = Command::new("notify-send")
-        .args(["--app-name=Clipbord", "--expire-time=2000", title, body])
+        .args([
+            "--app-name=Clipbord",
+            "--expire-time=1500",
+            "--hint=string:synchronous:touchpad",
+            "--hint=int:transient:1",
+            "--icon",
+            icon,
+            title,
+            body,
+        ])
         .status();
 }
 
@@ -92,6 +108,7 @@ pub fn toggle() -> Result<State> {
     notify(
         "Touchpad",
         &format!("Touchpad {}", next.label()),
+        next.icon(),
     );
     Ok(next)
 }
@@ -106,6 +123,7 @@ pub fn set_enabled(on: bool) -> Result<State> {
     notify(
         "Touchpad",
         &format!("Touchpad {}", next.label()),
+        next.icon(),
     );
     Ok(next)
 }

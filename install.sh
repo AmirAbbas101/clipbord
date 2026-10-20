@@ -163,19 +163,24 @@ fi
 # ydotoold must expose a user-accessible socket for Ctrl+V injection.
 
 if have_cmd systemctl && pkg_installed ydotool; then
-  echo "==> Enabling ydotool (auto-paste into focused inputs)"
   DROP_IN_DIR=/etc/systemd/system/ydotool.service.d
   DROP_IN="$DROP_IN_DIR/clipbord.conf"
-  run_root bash -c "mkdir -p '$DROP_IN_DIR' && cat > '$DROP_IN' <<EOF
+  EXPECTED="ExecStart=/usr/bin/ydotoold -p /tmp/.ydotool_socket -P 0660 -o ${UID_NUM}:${GID_NUM}"
+  if [[ -f "$DROP_IN" ]] && grep -qF "$EXPECTED" "$DROP_IN" 2>/dev/null; then
+    echo "==> ydotool service drop-in already configured"
+  else
+    echo "==> Enabling ydotool (auto-paste into focused inputs)"
+    run_root bash -c "mkdir -p '$DROP_IN_DIR' && cat > '$DROP_IN' <<EOF
 [Service]
 ExecStart=
-ExecStart=/usr/bin/ydotoold -p /tmp/.ydotool_socket -P 0660 -o ${UID_NUM}:${GID_NUM}
+$EXPECTED
 EOF
 systemctl daemon-reload
 systemctl enable --now ydotool.service
 systemctl restart ydotool.service" || {
-    echo "Warning: could not configure ydotool.service (auto-paste may fall back to xdotool)." >&2
-  }
+      echo "Warning: could not configure ydotool.service (auto-paste may fall back to xdotool)." >&2
+    }
+  fi
 fi
 
 # ── 7) systemd user service (background daemon) ──────────────────────────────
@@ -216,6 +221,25 @@ elif grep -qE '^\s*auto_paste\s*=' "$CONFIG_FILE"; then
   sed -i 's/^\s*auto_paste\s*=.*/auto_paste = true/' "$CONFIG_FILE"
 else
   echo 'auto_paste = true' >>"$CONFIG_FILE"
+fi
+
+# ── 8.5) Fix any GNOME custom shortcuts with unexpanded $USER ────────────────
+
+if have_cmd gsettings; then
+  CUSTOM_LIST=$(gsettings get org.gnome.settings-daemon.plugins.media-keys custom-keybindings 2>/dev/null || true)
+  if [[ "$CUSTOM_LIST" =~ /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/ ]]; then
+    # Extract path entries
+    for path in $(echo "$CUSTOM_LIST" | tr -d "[]'," | tr ' ' '\n'); do
+      if [[ -n "$path" ]]; then
+        cmd=$(gsettings get "org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:$path" command 2>/dev/null || true)
+        if [[ "$cmd" == *"'/home/\$USER/"* ]] || [[ "$cmd" == *"\"/home/\$USER/"* ]] || [[ "$cmd" == *"/home/\$USER/"* ]]; then
+          fixed_cmd=$(echo "$cmd" | sed "s|/home/\\\$USER|$HOME|g" | tr -d "'\"")
+          echo "==> Fixed GNOME shortcut command with literal \$USER: $path -> $fixed_cmd"
+          gsettings set "org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:$path" command "$fixed_cmd" 2>/dev/null || true
+        fi
+      fi
+    done
+  fi
 fi
 
 # ── 9) Verify ────────────────────────────────────────────────────────────────

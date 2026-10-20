@@ -56,15 +56,17 @@ Clipbord has **no app menu entry** on purpose. Bind custom shortcuts once:
 
 1. **Settings → Keyboard → Keyboard Shortcuts → Custom Shortcuts → +**
 2. **Name:** `Clipbord`
-3. **Command:** `/home/$USER/.local/bin/clipbord toggle`
+3. **Command:** `clipbord toggle` (or `/home/<your-username>/.local/bin/clipbord toggle`)
 4. **Shortcut:** `Super+V` (or `Ctrl+Alt+V`)
 
 **Touchpad on/off** (optional — stops accidental palm clicks while typing)
 
 1. **Custom Shortcuts → +** again
 2. **Name:** `Clipbord Touchpad`
-3. **Command:** `/home/$USER/.local/bin/clipbord touchpad`
+3. **Command:** `clipbord touchpad` (or `/home/<your-username>/.local/bin/clipbord touchpad`)
 4. **Shortcut:** e.g. `Super+Shift+T` (pick any free combo)
+
+> **Note:** GNOME custom shortcuts do not expand environment variables like `$USER`. Use `clipbord toggle` / `clipbord touchpad` directly, or replace `<your-username>` with your actual username.
 
 Press the shortcut to **disable** the touchpad before typing; press again to **enable** it. A desktop notification confirms the new state.
 

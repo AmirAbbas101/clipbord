@@ -48,8 +48,10 @@ enum TouchpadCmd {
     /// Flip touchpad on ↔ off (default when no subcommand).
     Toggle,
     /// Enable the touchpad.
+    #[command(alias = "enable")]
     On,
     /// Disable the touchpad (useful while typing).
+    #[command(alias = "disable")]
     Off,
     /// Print current touchpad state.
     Status,
